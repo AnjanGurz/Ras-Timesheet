@@ -1,0 +1,1004 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RAS Cleaning Log</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #1976d2;
+      --primary-dark: #0d47a1;
+      --bg: #f7f9fc;
+      --card: #ffffff;
+      --danger: #c62828;
+      --muted: #6b7280;
+      --radius: 12px;
+      --shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: #0f172a;
+    }
+    .app {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+    }
+    header .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .alert {
+      background: #fff7ed;
+      border-left: 4px solid #f97316;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin: 10px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .alert strong { color: #9a3412; }
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(25, 118, 210, 0.35);
+      transition: background 0.1s, transform 0.1s, box-shadow 0.1s;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn:active { transform: scale(0.97); box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25); }
+    .btn.full { width: 100%; }
+    .btn.small { padding: 6px 10px; font-size: 12px; box-shadow: none; }
+    .btn.secondary {
+      background: #e5e7eb;
+      color: #111827;
+      box-shadow: none;
+    }
+    .btn.secondary:hover { background: #d1d5db; }
+    .btn.danger {
+      background: var(--danger);
+      box-shadow: 0 4px 10px rgba(198, 40, 40, 0.35);
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-top: 14px;
+      margin-bottom: 16px;
+    }
+    .tabs {
+      display: flex;
+      border-radius: 999px;
+      background: #e5e7eb;
+      padding: 3px;
+      margin-bottom: 12px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 4px;
+      font-size: 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #4b5563;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: #ffffff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .field {
+      flex: 1 1 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
+    }
+    .field label {
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 9px 12px;
+      font-size: 15px;
+      background: #f9fafb;
+      transition: border 0.1s, box-shadow 0.1s, background 0.1s;
+    }
+    .field textarea {
+      border-radius: 10px;
+      resize: vertical;
+      min-height: 60px;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.25);
+    }
+    .field-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .field-inline button {
+      margin-left: 4px;
+    }
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+    .muted { font-size: 13px; color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 10px;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 7px 6px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      background: #eff3fb;
+      font-weight: 700;
+      color: #1f2933;
+    }
+    tr:nth-child(even) td {
+      background: #f9fafb;
+    }
+    .table-actions {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .hidden { display: none !important; }
+    .report-header {
+      text-transform: uppercase;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+    .report-sub {
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 10px;
+    }
+    .report-rule {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 8px 0 10px;
+    }
+    .total-box {
+      margin-top: 14px;
+      padding: 12px;
+      background: #e3f2fd;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-align: center;
+    }
+    .report-actions {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    @media (max-width: 640px) {
+      header h1 { font-size: 20px; }
+      .field { flex: 1 1 100%; }
+      table { font-size: 12px; }
+      th, td { padding: 6px 4px; }
+    }
+
+    /* PRINT MODE — show ONLY the timesheet */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #reportArea, #reportArea * {
+        visibility: visible !important;
+      }
+      #reportArea {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+      }
+      .report-actions,
+      .report-actions * {
+        display: none !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .report-header {
+        font-size: 22px !important;
+        font-weight: 800 !important;
+        margin-bottom: 4px !important;
+        text-transform: uppercase !important;
+      }
+      .report-sub {
+        font-size: 16px !important;
+        margin-bottom: 10px !important;
+      }
+      .report-rule {
+        border-top: 1px solid #000 !important;
+        margin: 8px 0 !important;
+      }
+      table {
+        border: none !important;
+        width: 100% !important;
+        font-size: 14px !important;
+      }
+      th, td {
+        border: none !important;
+        padding: 4px 0 !important;
+      }
+      .total-box {
+        background: none !important;
+        padding: 0 !important;
+        margin-top: 12px !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        text-align: left !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>RAS Cleaning Log</h1>
+      <div class="subtitle">Fast, simple, mobile‑friendly time logging</div>
+    </header>
+
+    <div id="periodAlert" class="alert hidden">
+      <div>
+        <strong>Pay period complete.</strong><br />
+        <span id="alertText"></span>
+      </div>
+      <button class="btn small" id="alertGenerateBtn">Generate timesheet</button>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" data-tab="log">Log shift</div>
+        <div class="tab" data-tab="report">Timesheets</div>
+      </div>
+
+      <!-- LOG TAB -->
+      <div id="tab-log">
+        <div class="section-title">Add / edit shift</div>
+        <form id="shiftForm">
+          <div class="row">
+            <div class="field">
+              <label>Your name</label>
+              <input type="text" id="name" required />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Date worked</label>
+              <input type="date" id="date" required />
+            </div>
+            <div class="field">
+              <label>Location</label>
+              <input type="text" id="location" required />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Start time</label>
+              <input type="time" id="startTime" required step="900" />
+            </div>
+            <div class="field">
+              <label>End time</label>
+              <input type="time" id="endTime" required step="900" />
+            </div>
+            <div class="field">
+              <label>Hours (auto)</label>
+              <input type="number" id="hours" readonly />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Break</label>
+              <div class="field-inline">
+                <span id="breakLabel">Break: -0.5 hr (auto)</span>
+                <button type="button" class="btn small secondary" id="toggleBreakBtn">Undo break</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Pay period</label>
+              <div class="field-inline">
+                <span id="payPeriodDisplay" class="muted">Auto from date</span>
+                <button type="button" class="btn small secondary" id="changePayPeriodBtn">Change</button>
+              </div>
+              <select id="payPeriodSelect" class="hidden"></select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Notes</label>
+              <textarea id="notes" placeholder="Optional"></textarea>
+            </div>
+          </div>
+
+          <div class="muted" id="hoursInfo" style="margin-top:6px;"></div>
+
+          <button class="btn full" type="submit" id="saveBtn">Save shift</button>
+          <button class="btn small secondary hidden" type="button" id="cancelEditBtn" style="margin-top:6px;">Cancel edit</button>
+        </form>
+
+        <div style="margin-top:18px;">
+          <div class="section-title">All shifts</div>
+          <div class="row">
+            <div class="field">
+              <label>Filter by pay period</label>
+              <select id="filterPayPeriod">
+                <option value="">All</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table id="logsTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>Pay period</th>
+                  <th>Location</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Break</th>
+                  <th>Hours</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="muted" id="totalHoursDisplay" style="margin-top:6px;"></div>
+        </div>
+      </div>
+
+      <!-- REPORT TAB -->
+      <div id="tab-report" class="hidden">
+        <div class="section-title">Generate timesheet</div>
+        <div class="muted" style="margin-bottom:8px;">
+          Choose worker and pay period to see a printable timesheet.
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Worker</label>
+            <select id="reportName"></select>
+          </div>
+          <div class="field">
+            <label>Pay period</label>
+            <select id="reportPayPeriod"></select>
+          </div>
+        </div>
+        <button class="btn full" id="generateReportBtn" style="margin-top:10px;">Generate timesheet</button>
+
+        <div id="reportArea" style="margin-top:18px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "ras_workLogs_2026";
+    const LAST_NAME_KEY = "ras_lastWorkerName";
+    const TWO_MONTHS_MS = 60 * 24 * 60 * 60 * 1000;
+
+    const payPeriods = [
+      { label: "Dec 21, 2025 – Jan 3, 2026", start: "2025-12-21", end: "2026-01-03" },
+      { label: "Jan 4 – Jan 17, 2026",       start: "2026-01-04", end: "2026-01-17" },
+      { label: "Jan 18 – Jan 31, 2026",      start: "2026-01-18", end: "2026-01-31" },
+      { label: "Feb 1 – Feb 14, 2026",       start: "2026-02-01", end: "2026-02-14" },
+      { label: "Feb 15 – Feb 28, 2026",      start: "2026-02-15", end: "2026-02-28" },
+      { label: "Mar 1 – Mar 14, 2026",       start: "2026-03-01", end: "2026-03-14" },
+      { label: "Mar 15 – Mar 28, 2026",      start: "2026-03-15", end: "2026-03-28" },
+      { label: "Mar 29 – Apr 11, 2026",      start: "2026-03-29", end: "2026-04-11" },
+      { label: "Apr 12 – Apr 25, 2026",      start: "2026-04-12", end: "2026-04-25" },
+      { label: "Apr 26 – May 9, 2026",       start: "2026-04-26", end: "2026-05-09" },
+      { label: "May 10 – May 23, 2026",      start: "2026-05-10", end: "2026-05-23" },
+      { label: "May 24 – Jun 6, 2026",       start: "2026-05-24", end: "2026-06-06" },
+      { label: "Jun 7 – Jun 20, 2026",       start: "2026-06-07", end: "2026-06-20" },
+      { label: "Jun 21 – Jul 4, 2026",       start: "2026-06-21", end: "2026-07-04" },
+      { label: "Jul 5 – Jul 18, 2026",       start: "2026-07-05", end: "2026-07-18" },
+      { label: "Jul 19 – Aug 1, 2026",       start: "2026-07-19", end: "2026-08-01" },
+      { label: "Aug 2 – Aug 15, 2026",       start: "2026-08-02", end: "2026-08-15" },
+      { label: "Aug 16 – Aug 29, 2026",      start: "2026-08-16", end: "2026-08-29" },
+      { label: "Aug 30 – Sep 12, 2026",      start: "2026-08-30", end: "2026-09-12" },
+      { label: "Sep 13 – Sep 26, 2026",      start: "2026-09-13", end: "2026-09-26" },
+      { label: "Sep 27 – Oct 10, 2026",      start: "2026-09-27", end: "2026-10-10" },
+      { label: "Oct 11 – Oct 24, 2026",      start: "2026-10-11", end: "2026-10-24" },
+      { label: "Oct 25 – Nov 7, 2026",       start: "2026-10-25", end: "2026-11-07" },
+      { label: "Nov 8 – Nov 21, 2026",       start: "2026-11-08", end: "2026-11-21" },
+      { label: "Nov 22 – Dec 5, 2026",       start: "2026-11-22", end: "2026-12-05" },
+      { label: "Dec 6 – Dec 19, 2026",       start: "2026-12-06", end: "2026-12-19" },
+      { label: "Dec 20, 2026 – Jan 2, 2027", start: "2026-12-20", end: "2027-01-02" }
+    ];
+
+    let logs = [];
+    let editingId = null;
+    let breakApplied = true;
+
+    const tabs = document.querySelectorAll(".tab");
+    const tabLog = document.getElementById("tab-log");
+    const tabReport = document.getElementById("tab-report");
+
+    const periodAlert = document.getElementById("periodAlert");
+    const alertText = document.getElementById("alertText");
+    const alertGenerateBtn = document.getElementById("alertGenerateBtn");
+
+    const nameInput = document.getElementById("name");
+    const dateInput = document.getElementById("date");
+    const locationInput = document.getElementById("location");
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+    const hoursInput = document.getElementById("hours");
+    const notesInput = document.getElementById("notes");
+    const hoursInfo = document.getElementById("hoursInfo");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const shiftForm = document.getElementById("shiftForm");
+
+    const breakLabel = document.getElementById("breakLabel");
+    const toggleBreakBtn = document.getElementById("toggleBreakBtn");
+
+    const payPeriodDisplay = document.getElementById("payPeriodDisplay");
+    const changePayPeriodBtn = document.getElementById("changePayPeriodBtn");
+    const payPeriodSelect = document.getElementById("payPeriodSelect");
+
+    const logsTableBody = document.querySelector("#logsTable tbody");
+    const totalHoursDisplay = document.getElementById("totalHoursDisplay");
+    const filterPayPeriodSelect = document.getElementById("filterPayPeriod");
+
+    const reportNameSelect = document.getElementById("reportName");
+    const reportPayPeriodSelect = document.getElementById("reportPayPeriod");
+    const reportArea = document.getElementById("reportArea");
+    const generateReportBtn = document.getElementById("generateReportBtn");
+
+    function loadLogs() {
+      logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    }
+    function saveLogs() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+    }
+    function cleanupOldLogs() {
+      const now = Date.now();
+      loadLogs();
+      logs = logs.filter(l => now - l.createdAt < TWO_MONTHS_MS);
+      saveLogs();
+    }
+    function parseDate(str) {
+      const d = new Date(str);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    function isDateInRange(dateStr, startStr, endStr) {
+      const d = parseDate(dateStr);
+      const s = parseDate(startStr);
+      const e = parseDate(endStr);
+      if (!d || !s || !e) return false;
+      return d >= s && d <= e;
+    }
+    function findPayPeriodForDate(dateStr) {
+      for (const pp of payPeriods) {
+        if (isDateInRange(dateStr, pp.start, pp.end)) return pp;
+      }
+      return null;
+    }
+
+    // 12h-friendly, overnight-aware hours calculation
+    function parseTimeToHours(start, end) {
+      if (!start || !end) return 0;
+      const [sh, sm] = start.split(":").map(Number);
+      const [eh, em] = end.split(":").map(Number);
+      let startMinutes = sh * 60 + sm;
+      let endMinutes = eh * 60 + em;
+      if (endMinutes < startMinutes) {
+        endMinutes += 24 * 60; // overnight shift
+      }
+      const diff = (endMinutes - startMinutes) / 60;
+      return diff > 0 ? diff : 0;
+    }
+
+    function formatDateDisplay(str) {
+      const d = parseDate(str);
+      if (!d) return str;
+      return d.toISOString().slice(0, 10);
+    }
+    function getAllNames() {
+      return [...new Set(logs.map(l => l.name))].sort();
+    }
+    function getAllPayPeriodLabelsUsed() {
+      return [...new Set(logs.map(l => l.payPeriodLabel))].sort();
+    }
+    function getPayPeriodByLabel(label) {
+      return payPeriods.find(pp => pp.label === label) || null;
+    }
+    function getLatestCompletedPeriodWithLogs() {
+      const today = new Date();
+      const candidates = payPeriods.filter(pp => parseDate(pp.end) < today);
+      if (!candidates.length) return null;
+      candidates.sort((a, b) => parseDate(b.end) - parseDate(a.end));
+      const latest = candidates[0];
+      const hasLogs = logs.some(l => l.payPeriodLabel === latest.label);
+      return hasLogs ? latest : null;
+    }
+
+    function updateBreakUI() {
+      if (breakApplied) {
+        breakLabel.textContent = "Break: -0.5 hr (auto)";
+        toggleBreakBtn.textContent = "Undo break";
+      } else {
+        breakLabel.textContent = "Break: 0 hr (no break)";
+        toggleBreakBtn.textContent = "Add -0.5 hr break";
+      }
+    }
+    function updateHoursDisplay() {
+      const base = parseTimeToHours(startTimeInput.value, endTimeInput.value);
+      let adjusted = base;
+      if (breakApplied && base > 0.5) adjusted -= 0.5;
+      if (adjusted < 0) adjusted = 0;
+      hoursInput.value = adjusted ? adjusted.toFixed(2) : "";
+      if (startTimeInput.value && endTimeInput.value) {
+        hoursInfo.textContent = `Base: ${base.toFixed(2)} hrs → Final: ${adjusted.toFixed(2)} hrs`;
+      } else {
+        hoursInfo.textContent = "";
+      }
+    }
+    toggleBreakBtn.addEventListener("click", () => {
+      breakApplied = !breakApplied;
+      updateBreakUI();
+      updateHoursDisplay();
+    });
+    [startTimeInput, endTimeInput].forEach(el => {
+      el.addEventListener("change", updateHoursDisplay);
+    });
+
+    function populatePayPeriodSelect() {
+      payPeriodSelect.innerHTML = "";
+      payPeriods.forEach(pp => {
+        const opt = document.createElement("option");
+        opt.value = pp.label;
+        opt.textContent = pp.label;
+        payPeriodSelect.appendChild(opt);
+      });
+    }
+    function autoSetPayPeriodFromDate() {
+      const dateStr = dateInput.value;
+      if (!dateStr) {
+        payPeriodDisplay.textContent = "Auto from date";
+        return;
+      }
+      const pp = findPayPeriodForDate(dateStr);
+      if (pp) {
+        payPeriodDisplay.textContent = pp.label + " (auto)";
+        payPeriodSelect.value = pp.label;
+      } else {
+        payPeriodDisplay.textContent = "No matching pay period";
+      }
+    }
+    dateInput.addEventListener("change", () => {
+      autoSetPayPeriodFromDate();
+      checkPeriodAlert();
+    });
+    changePayPeriodBtn.addEventListener("click", () => {
+      const isHidden = payPeriodSelect.classList.contains("hidden");
+      if (isHidden) {
+        payPeriodSelect.classList.remove("hidden");
+        changePayPeriodBtn.textContent = "Done";
+      } else {
+        payPeriodSelect.classList.add("hidden");
+        changePayPeriodBtn.textContent = "Change";
+        if (payPeriodSelect.value) {
+          payPeriodDisplay.textContent = payPeriodSelect.value + " (manual)";
+        }
+      }
+    });
+    payPeriodSelect.addEventListener("change", () => {
+      if (payPeriodSelect.value) {
+        payPeriodDisplay.textContent = payPeriodSelect.value + " (manual)";
+      }
+    });
+
+    function resetForm() {
+      editingId = null;
+      shiftForm.reset();
+      breakApplied = true;
+      updateBreakUI();
+      hoursInfo.textContent = "";
+      hoursInput.value = "";
+      cancelEditBtn.classList.add("hidden");
+      saveBtn.textContent = "Save shift";
+      const today = new Date().toISOString().slice(0, 10);
+      dateInput.value = today;
+      autoSetPayPeriodFromDate();
+      const lastName = localStorage.getItem(LAST_NAME_KEY);
+      if (lastName) nameInput.value = lastName;
+    }
+    function fillFormForEdit(log) {
+      editingId = log.id;
+      nameInput.value = log.name;
+      dateInput.value = log.date;
+      locationInput.value = log.location;
+      startTimeInput.value = log.startTime;
+      endTimeInput.value = log.endTime;
+      breakApplied = log.breakApplied;
+      updateBreakUI();
+      notesInput.value = log.notes || "";
+      payPeriodSelect.value = log.payPeriodLabel;
+      payPeriodDisplay.textContent = log.payPeriodLabel + " (manual)";
+      updateHoursDisplay();
+      cancelEditBtn.classList.remove("hidden");
+      saveBtn.textContent = "Update shift";
+    }
+
+    shiftForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      updateHoursDisplay();
+      const hoursVal = parseFloat(hoursInput.value || "0");
+      if (!hoursVal || hoursVal <= 0) {
+        alert("Hours must be greater than 0.");
+        return;
+      }
+      const name = nameInput.value.trim();
+      const date = dateInput.value;
+      const location = locationInput.value.trim();
+      const startTime = startTimeInput.value;
+      const endTime = endTimeInput.value;
+      if (!name || !date || !location || !startTime || !endTime) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+      let payPeriodLabel = payPeriodSelect.value;
+      if (!payPeriodLabel) {
+        const pp = findPayPeriodForDate(date);
+        if (pp) payPeriodLabel = pp.label;
+      }
+      if (!payPeriodLabel) {
+        alert("No matching pay period for this date.");
+        return;
+      }
+
+      const log = {
+        id: editingId || String(Date.now()) + "_" + Math.random().toString(36).slice(2),
+        name,
+        date,
+        location,
+        startTime,
+        endTime,
+        hours: hoursVal,
+        breakApplied,
+        notes: notesInput.value.trim(),
+        payPeriodLabel,
+        createdAt: editingId
+          ? logs.find(l => l.id === editingId)?.createdAt || Date.now()
+          : Date.now()
+      };
+
+      localStorage.setItem(LAST_NAME_KEY, name);
+
+      loadLogs();
+      if (editingId) {
+        const idx = logs.findIndex(l => l.id === editingId);
+        if (idx !== -1) logs[idx] = log;
+      } else {
+        logs.push(log);
+      }
+      saveLogs();
+      resetForm();
+      refreshAllUI();
+      checkPeriodAlert();
+    });
+
+    cancelEditBtn.addEventListener("click", () => {
+      resetForm();
+    });
+
+    nameInput.addEventListener("blur", () => {
+      localStorage.setItem(LAST_NAME_KEY, nameInput.value.trim());
+      renderLogsTable();
+    });
+
+    function renderLogsTable() {
+      logsTableBody.innerHTML = "";
+      const filterPP = filterPayPeriodSelect.value;
+      let filtered = logs.slice().sort((a, b) => a.date.localeCompare(b.date));
+      if (filterPP) filtered = filtered.filter(l => l.payPeriodLabel === filterPP);
+
+      let total = 0;
+      filtered.forEach(log => {
+        total += log.hours;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${log.name}</td>
+          <td>${formatDateDisplay(log.date)}</td>
+          <td>${log.payPeriodLabel}</td>
+          <td>${log.location}</td>
+          <td>${log.startTime}</td>
+          <td>${log.endTime}</td>
+          <td>${log.breakApplied ? "-0.5" : ""}</td>
+          <td>${log.hours.toFixed(2)}</td>
+          <td>
+            <div class="table-actions">
+              <button class="btn small secondary editBtn" data-id="${log.id}">Edit</button>
+              <button class="btn small danger deleteBtn" data-id="${log.id}">Del</button>
+            </div>
+          </td>
+        `;
+        logsTableBody.appendChild(tr);
+      });
+
+      totalHoursDisplay.textContent = `Total hours in view: ${total.toFixed(2)} hrs`;
+
+      logsTableBody.querySelectorAll(".editBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          const log = logs.find(l => l.id === id);
+          if (log) fillFormForEdit(log);
+        });
+      });
+      logsTableBody.querySelectorAll(".deleteBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          if (!confirm("Delete this shift?")) return;
+          loadLogs();
+          logs = logs.filter(l => l.id !== id);
+          saveLogs();
+          if (editingId === id) resetForm();
+          refreshAllUI();
+        });
+      });
+    }
+
+    filterPayPeriodSelect.addEventListener("change", renderLogsTable);
+
+    function populateFilterAndReportSelectors() {
+      const usedPP = getAllPayPeriodLabelsUsed();
+      filterPayPeriodSelect.innerHTML = `<option value="">All</option>`;
+      usedPP.forEach(label => {
+        const opt = document.createElement("option");
+        opt.value = label;
+        opt.textContent = label;
+        filterPayPeriodSelect.appendChild(opt);
+      });
+
+      const names = getAllNames();
+      reportNameSelect.innerHTML = "";
+      names.forEach(n => {
+        const opt = document.createElement("option");
+        opt.value = n;
+        opt.textContent = n;
+        reportNameSelect.appendChild(opt);
+      });
+
+      reportPayPeriodSelect.innerHTML = "";
+      usedPP.forEach(label => {
+        const opt = document.createElement("option");
+        opt.value = label;
+        opt.textContent = label;
+        reportPayPeriodSelect.appendChild(opt);
+      });
+    }
+
+    function generateReport(name, payPeriodLabel) {
+      const pp = getPayPeriodByLabel(payPeriodLabel);
+      if (!pp) {
+        reportArea.innerHTML = "<p class='muted'>No such pay period.</p>";
+        return;
+      }
+      const rows = logs
+        .filter(l => l.name === name && l.payPeriodLabel === payPeriodLabel)
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      if (!rows.length) {
+        reportArea.innerHTML = "<p class='muted'>No shifts found for this worker and pay period.</p>";
+        return;
+      }
+
+      let total = 0;
+      let tableRows = "";
+      rows.forEach(l => {
+        total += l.hours;
+        tableRows += `
+          <tr>
+            <td>${formatDateDisplay(l.date)}</td>
+            <td>${l.location}</td>
+            <td>${l.startTime}</td>
+            <td>${l.endTime}</td>
+            <td>${l.breakApplied ? "-0.5" : ""}</td>
+            <td>${l.hours.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+
+      const upperName = name.toUpperCase();
+      const subLine = `Pay Period • ${pp.label.replace(",", "")}`;
+      const totalText = `TOTAL HOURS: ${total.toFixed(2)} hr`;
+
+      reportArea.innerHTML = `
+        <div class="card" style="margin-top:0;">
+          <div class="report-header">${upperName}</div>
+          <div class="report-sub">${subLine}</div>
+          <hr class="report-rule" />
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Location</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Break</th>
+                  <th>Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+          </div>
+          <div class="total-box">${totalText}</div>
+          <div class="report-actions">
+            <button class="btn small secondary" id="btnScreenshot">Take screenshot</button>
+            <button class="btn small secondary" id="btnEmail">Email timesheet</button>
+            <button class="btn small secondary" id="btnPrint">Print / Save PDF</button>
+          </div>
+          <div class="muted" style="margin-top:6px;">
+            Tip: On your phone, use the screenshot button or your device's share/print options.
+          </div>
+        </div>
+      `;
+
+      const btnScreenshot = document.getElementById("btnScreenshot");
+      const btnEmail = document.getElementById("btnEmail");
+      const btnPrint = document.getElementById("btnPrint");
+
+      btnScreenshot.addEventListener("click", () => {
+        alert("Use your device's screenshot feature to capture this timesheet.");
+      });
+
+      btnEmail.addEventListener("click", () => {
+        const subject = encodeURIComponent(`Timesheet – ${pp.label} – ${name}`);
+        const body = encodeURIComponent(`Hi,\n\nPlease find my timesheet for ${pp.label}.\n\nTotal hours: ${total.toFixed(2)} hr\n\nThanks,\n${name}`);
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      });
+
+      btnPrint.addEventListener("click", () => {
+        window.print();
+      });
+    }
+
+    generateReportBtn.addEventListener("click", () => {
+      const name = reportNameSelect.value;
+      const ppLabel = reportPayPeriodSelect.value;
+      if (!name || !ppLabel) {
+        alert("Please select worker and pay period.");
+        return;
+      }
+      generateReport(name, ppLabel);
+    });
+
+    function checkPeriodAlert() {
+      const latest = getLatestCompletedPeriodWithLogs();
+      if (!latest) {
+        periodAlert.classList.add("hidden");
+        return;
+      }
+      alertText.textContent = `Your pay period ending ${latest.end} is now complete. Please submit your timesheet.`;
+      periodAlert.classList.remove("hidden");
+      alertGenerateBtn.onclick = () => {
+        const currentName = nameInput.value.trim();
+        let nameToUse = currentName;
+        if (!nameToUse) {
+          const names = getAllNames();
+          nameToUse = names[0] || "";
+        }
+        if (!nameToUse) {
+          alert("Enter your name first, then generate the timesheet.");
+          return;
+        }
+        tabs.forEach(t => t.classList.remove("active"));
+        document.querySelector('.tab[data-tab="report"]').classList.add("active");
+        tabLog.classList.add("hidden");
+        tabReport.classList.remove("hidden");
+
+        populateFilterAndReportSelectors();
+        reportNameSelect.value = nameToUse;
+        reportPayPeriodSelect.value = latest.label;
+        generateReport(nameToUse, latest.label);
+      };
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const target = tab.dataset.tab;
+        tabLog.classList.toggle("hidden", target !== "log");
+        tabReport.classList.toggle("hidden", target !== "report");
+      });
+    });
+
+    function refreshAllUI() {
+      populateFilterAndReportSelectors();
+      renderLogsTable();
+    }
+
+    (function init() {
+      cleanupOldLogs();
+      loadLogs();
+      populatePayPeriodSelect();
+      const today = new Date().toISOString().slice(0, 10);
+      dateInput.value = today;
+      autoSetPayPeriodFromDate();
+      const lastName = localStorage.getItem(LAST_NAME_KEY);
+      if (lastName) nameInput.value = lastName;
+      updateBreakUI();
+      refreshAllUI();
+      checkPeriodAlert();
+    })();
+  </script>
+</body>
+</html>
